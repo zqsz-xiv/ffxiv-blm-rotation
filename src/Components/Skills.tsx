@@ -9,31 +9,37 @@ import {localize, localizeSkillName} from "./Localization";
 import {updateTimelineView} from "./Timeline";
 import * as ReactDOMServer from 'react-dom/server';
 import {getCurrentThemeColors} from "./ColorTheme";
-import {getAllSkills} from "../Game/Skills";
+import {getSkill} from "../Game/Skills";
 
-// Imports of Game/Jobs/* must come after Game/Skills is initialized.
-import "../Game/Jobs/BLM";
-import "../Game/Jobs/PCT";
-import "../Game/Jobs/RoleActions";
+// Game/Jobs/* must be run first to ensure all skills have been registered, so we need to
+// load images lazily to ensure we're not dependent on webpack's module resolution order.
+const skillIconImages = new Map();
 
-// seems useful: https://na.finalfantasyxiv.com/lodestone/special/fankit/icon/
-export const skillIcons = new Map();
-
-// Only import necessary skills
-// TODO: change this if we serve multiple jobs off the same site
-getAllSkills(ShellInfo.job)!.forEach(
-	(skillInfo) => skillIcons.set(skillInfo.name, require(`./Asset/Skills/${skillInfo.assetPath}`)),
-);
-
-export const skillIconImages = new Map();
-skillIcons.forEach((path, skillName)=>{
-	let imgObj = new Image();
-	imgObj.src = path;
-	imgObj.onload = function() {
-		updateTimelineView();
+export const getSkillIconPath = (skillName: SkillName | undefined) => {
+	if (!skillName) {
+		return undefined;
 	}
-	skillIconImages.set(skillName, imgObj);
-});
+	const skill = getSkill(ShellInfo.job, skillName);
+	if (skill) {
+		return require(`./Asset/Skills/${skill.assetPath}`);
+	}
+	return undefined;
+};
+
+export const getSkillIconImage = (skillName: SkillName) => {
+	if (skillIconImages.has(skillName)) {
+		return skillIconImages.get(skillName);
+	}
+	const skill = getSkill(ShellInfo.job, skillName);
+	if (skill) {
+		let imgObj = new Image();
+		imgObj.src = require(`./Asset/Skills/${skill.assetPath}`);
+		imgObj.onload = () => updateTimelineView();
+		skillIconImages.set(skillName, imgObj);
+		return imgObj;
+	}
+	return undefined;
+};
 
 function ProgressCircle(props={
 	className: "",
@@ -134,7 +140,7 @@ class SkillButton extends React.Component {
 		});
 	}
 	render() {
-		let iconPath = skillIcons.get(this.props.skillName);
+		let iconPath = getSkillIconPath(this.props.skillName);
 		let iconStyle: React.CSSProperties = {
 			width: 48,
 			height: 48,

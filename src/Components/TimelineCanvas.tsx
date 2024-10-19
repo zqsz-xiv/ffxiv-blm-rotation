@@ -15,7 +15,7 @@ import {
 } from "../Controller/Timeline";
 import {StaticFn, TimelineDimensions} from "./Common";
 import {BuffType, ResourceType, SkillName, WarningType} from "../Game/Common";
-import {skillIconImages} from "./Skills";
+import {getSkillIconImage} from "./Skills";
 import {buffIconImages} from "./Buffs";
 import {controller} from "../Controller/Controller";
 import {localize, localizeBuffType, localizeSkillName} from "./Localization";
@@ -445,7 +445,7 @@ function drawSkills(
 		}
 
 		// skill icon
-		let img = skillIconImages.get(skill.skillName);
+		let img = getSkillIconImage(skill.skillName);
 		if (img) skillIcons.push({elem: e, x: x, y: y});
 	});
 
@@ -525,7 +525,7 @@ function drawSkills(
 	// icons
 	g_ctx.beginPath();
 	skillIcons.forEach(icon=>{
-		g_ctx.drawImage(skillIconImages.get(icon.elem.skillName), icon.x, icon.y, 28, 28);
+		g_ctx.drawImage(getSkillIconImage(icon.elem.skillName), icon.x, icon.y, 28, 28);
 		let node = icon.elem.node;
 
 		let lines: string[] = [];
