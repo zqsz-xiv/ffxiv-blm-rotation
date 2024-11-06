@@ -103,12 +103,12 @@ export class DoTBuff extends Resource {
 }
 
 export class CoolDown extends Resource {
-	readonly #cdPerStack: number;
+	readonly #defaultBaseRecast: number;
 	#recastTimeScale: number;
 	#currentBaseRecast: number;
 	constructor(type: ResourceType, cdPerStack: number, maxStacks: number, initialNumStacks: number) {
 		super(type, maxStacks * cdPerStack, initialNumStacks * cdPerStack);
-		this.#cdPerStack = cdPerStack;
+		this.#defaultBaseRecast = cdPerStack;
 		this.#currentBaseRecast = cdPerStack; // special case for mixed-recast spells
 		this.#recastTimeScale = 1; // effective for the next stack (i.e. 0.85 if captured LL)
 	}
@@ -116,7 +116,7 @@ export class CoolDown extends Resource {
 	stacksAvailable() { return Math.floor((this.availableAmount() + Debug.epsilon) / this.#currentBaseRecast); }
 	maxStacks() { return this.maxValue / this.#currentBaseRecast; }
 	useStack(game: GameState) {
-		this.consume(this.#cdPerStack);
+		this.consume(this.#defaultBaseRecast);
 		this.#reCaptureRecastTimeScale(game);
 	}
 	useStackWithRecast(game: GameState, recast: number) {
@@ -311,7 +311,8 @@ ALL_JOBS.forEach((job) => {
 		maxStacks: 1,
 		cdPerStack: 2.5
 	}]]));
-	// MP, tincture buff, and sprint are common to all jobs
+	// MP, tincture buff, InCombat, and sprint are common to all jobs
+	makeResource(job, ResourceType.InCombat, 1, {default: 0});
 	makeResource(job, ResourceType.Mana, 10000, {default: 10000});
 	makeResource(job, ResourceType.Tincture, 1, {timeout: 30});
 	makeResource(job, ResourceType.Sprint, 1, {timeout: 10});
