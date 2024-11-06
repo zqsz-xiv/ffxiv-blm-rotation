@@ -3,7 +3,7 @@ import {ShellInfo, ShellJob} from "../Controller/Common";
 import {Expandable, Help, ButtonIndicator} from "./Common";
 import {localize} from "./Localization";
 import {DebugOptions} from "./DebugOptions";
-import changelog from "../changelog.json"
+import changelog from "../pct_changelog.json"
 import {getCurrentThemeColors} from "./ColorTheme";
 
 const THIS_DOMAIN = {
