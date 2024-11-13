@@ -1,3 +1,8 @@
+# Pictomancer in the Shell has moved!
+We're now part of XIV in the Shell, which merges BLM, PCT, and more future jobs: https://github.com/xivintheshell/xivintheshell
+
+https://xivintheshell.com
+
 # Pictomancer in the Shell
 
 FFXIV ~~black mage~~ Pictomancer job simulator & rotation planner.
